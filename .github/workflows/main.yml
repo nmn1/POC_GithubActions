@@ -41,7 +41,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           # list of Docker images to use as base name for tags
-          images: ${{ env.DOCKER_USER }}/${{ env.IMAGE_NAME }}  
+          images: naman01/poc_git_actions
           tags: |
             type=semver,pattern={{major}}.{{minor}}
 
