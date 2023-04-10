@@ -4,7 +4,7 @@ on:
     branches: [ main ]
 env:
   DOCKER_USER: naman01
-  IMAGE_TAG: xMemGame 
+  IMAGE_TAG: poc_git_actions
 jobs:
   liniting:
     runs-on: ubuntu-latest
