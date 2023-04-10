@@ -11,7 +11,17 @@ jobs:
 
       - name: Lint Action
         uses: wearerequired/lint-action@v2.3.0
-      - name: Super-Linter
-        uses: github/super-linter@v4.10.1
+      # - name: Super-Linter
+      #   uses: github/super-linter@v4.10.1
+  SAST:
+    runs-on: ubuntu-latest
+    steps:
+    - name: sast steps
+      run: echo "steps for sast"
+  DOCKER_BUILD:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Docker Build
+        run: echo "Docker steps"
   
 
