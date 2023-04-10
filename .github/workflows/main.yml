@@ -2,6 +2,8 @@ name: GitHub Action Workflow
 on: 
   push:
     branches: [ main ]
+    tags:
+      - "v*.*.*"
 env:
   DOCKER_USER: naman01
   IMAGE_NAME: poc_git_actions
