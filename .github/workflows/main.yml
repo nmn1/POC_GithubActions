@@ -1,0 +1,11 @@
+name: GitHub Action Workflow
+on: 
+- push
+
+jobs:
+  liniting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint Action
+        uses: wearerequired/lint-action@v2.3.0
+
