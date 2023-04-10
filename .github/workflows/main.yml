@@ -43,6 +43,7 @@ jobs:
           # list of Docker images to use as base name for tags
           images: naman01/poc_git_actions
           tags: |
+            type=ref,event=branch
             type=semver,pattern={{major}}.{{minor}}
 
       - name: Set up Docker Buildx
