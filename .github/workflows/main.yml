@@ -6,6 +6,9 @@ jobs:
   liniting:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+         
       - name: Lint Action
         uses: wearerequired/lint-action@v2.3.0
 
