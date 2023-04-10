@@ -36,6 +36,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{DOCKER_USER}}/${{IMAGE_TAG}}:latest
+          tags: ${{env.DOCKER_USER}}/${{env.IMAGE_TAG}}:latest
   
 
