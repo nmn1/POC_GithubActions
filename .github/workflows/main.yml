@@ -70,7 +70,10 @@ jobs:
       
       - name: Output Image Tag
         id: tagging
-        run: echo "tag_info=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
+        run: | 
+          tag_info=$(echo "${{ steps.meta.outputs.tags }}") 
+          echo $tag_info >> "$GITHUB_OUTPUT"
+          echo $tag_info
       
   DEPLOYMENT-DEVELOPMENT-ECS:
     runs-on: ubuntu-latest
