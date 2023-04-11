@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [SAST, liniting ]
     outputs:
-      MY_TAG: ${{ steps.tagging.outputs.taggs }}
+      MY_VERSION: ${{ steps.version.outputs.img_version }}
     steps:
       - uses: actions/checkout@v3
       - name: Login to Docker Hub
@@ -68,10 +68,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       
-      - name: Output Image Tag
-        id: tagging
+      - name: Output Image version
+        id: version
         run: | 
-          echo "taggs=$(echo ${{ steps.meta.outputs.tags }})" >> $GITHUB_OUTPUT
+          echo "img_version=$(echo ${{ steps.meta.outputs.version }})" >> $GITHUB_OUTPUT
 
           
       
@@ -86,8 +86,8 @@ jobs:
         
       - name: echo image name
         env:
-          MY_IMAGE_TAG: ${{needs.DOCKER_BUILD.outputs.MY_TAG}}
-        run: echo $MY_IMAGE_TAG 
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}}
+        run: echo $MY_IMG_VERSION 
         
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
