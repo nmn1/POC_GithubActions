@@ -70,6 +70,7 @@ jobs:
       
       - name: Build For Production
         id: image-push
+        if: github.ref_type == 'tag'
         uses: docker/build-push-action@v4  
         with:
           context: .
@@ -78,6 +79,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
       - name: echo ***********    
         run: echo "${{ steps.meta.outputs.tags }} *********************"
+     
       - name: " Docker Artifacts"
         uses: actions/upload-artifact@v3
         with:
