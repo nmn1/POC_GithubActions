@@ -65,11 +65,15 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name: echo ***********    
+      - name: echo *********** 
+        id: image-tagging
         run: | 
           TAG=${{ steps.meta.outputs.version }}
-          echo "MY_TAG=$TAG" >> $GITHUB_ENV
-          echo "${{ env.MY_TAG }}"
+          echo "MY_TAG=$TAG" >> $GITHUB_OUTPUT
+      - name: echo output
+        run: |
+          echo "${{ steps.meta.outputs.tags }}"
+          echo "${{ steps.image-tagging.outputs.MY_TAG }}"
       
   
   DEPLOYMENT-DEVELOPMENT-ECS:
@@ -80,7 +84,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-    
+       
       - name: image
         id: load-image
         run: echo "IMAGE_NAME=naman01/poc_git_actions:${{ env.MY_TAG }}" >> $GITHUB_ENV
