@@ -79,8 +79,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: echo ***********    
-        run: echo "${{ steps.meta.outputs.version }} *********************"
-     
+        run: | 
+          echo "${{ steps.meta.outputs.version }} *********************"
+          echo "${{ github.run_id }}"
       - name: " Docker Artifacts"
         uses: actions/upload-artifact@v3
         with:
