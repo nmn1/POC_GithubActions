@@ -1,18 +1,17 @@
 name: GitHub Action Workflow
 on: 
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
     tags:
       - "v*.*.*"
 env:
-  # DOCKER_USER: naman01
-  # IMAGE_NAME: poc_git_actions
 
   AWS_REGION: us-east-1                   # set this to your preferred AWS region,
   ECS_SERVICE: gameAppService                 # set this to your Amazon ECS service name
   ECS_CLUSTER: MY_ECS_DEV_CLUSTER                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json
   CONTAINER_NAME: gameApp  
+  DOCKER_REPO: naman01/poc_git_actions
 
 jobs:
   liniting:
@@ -35,10 +34,11 @@ jobs:
   DOCKER_BUILD:
     runs-on: ubuntu-latest
     needs: [SAST, liniting ]
+    outputs:
+      MY_VERSION: ${{ steps.version.outputs.img_version }}
     steps:
       - uses: actions/checkout@v3
       - name: Login to Docker Hub
-        if: github.ref_type == 'tag'
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -52,6 +52,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: naman01/poc_git_actions
+          flavor: latest=false
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -59,69 +60,53 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build For Development
-        if: github.ref_type != 'tag'
+      - name: Build For Production
+        id: image-push
         uses: docker/build-push-action@v4  
         with:
           context: .
-          outputs: type=docker,dest=/tmp/docker.tar
-          push: ${{ github.ref_type == 'tag' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       
-      - name: Build For Production
-        id: image-push
-        if: github.ref_type == 'tag'
-        uses: docker/build-push-action@v4  
-        with:
-          context: .
-          push: ${{ github.ref_type == 'tag' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-      - name: echo ***********    
+      - name: Output Image version
+        id: version
         run: | 
-          echo "${{ steps.meta.outputs.version }} *********************"
-          echo "${{ github.run_id }}"
-      - name: " Docker Artifacts"
-        uses: actions/upload-artifact@v3
-        with:
-          name: docker
-          path: /tmp/docker.tar
-  
+          echo "img_version=$(echo ${{ steps.meta.outputs.version }})" >> $GITHUB_OUTPUT
+
+          
+      
   DEPLOYMENT-DEVELOPMENT-ECS:
     runs-on: ubuntu-latest
+    if: github.ref_name == 'dev'
     environment: development
     needs: DOCKER_BUILD
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: download image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: docker
-          path: /tmp
-      - name: load image
-        id: load-image
+        
+      - name: Setting Image Name
+        env:
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}} 
         run: |
-          docker load --input /tmp/docker.tar > /tmp/image.txt  
-          echo "IMAGE_NAME=`cat /tmp/image.txt | awk -F' '  '{print $3}'`" >> $GITHUB_ENV
-
+          echo "MY_IMAGE=${{ env.DOCKER_REPO }}:$MY_IMG_VERSION" >> $GITHUB_ENV  
+          
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}      
-      - name: echo image name
-        run: echo "${{ env.IMAGE_NAME }}"
-
+      
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
+        env:
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}} 
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ env.IMAGE_NAME }}
+          image: ${{ env.MY_IMAGE }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -130,4 +115,41 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-      
+          
+  DEPLOYMENT-PRODUCTION-ECS:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    environment: production
+    needs: DOCKER_BUILD
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setting Image Name
+        env:
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}} 
+        run: |
+          echo "MY_IMAGE=${{ env.DOCKER_REPO }}:$MY_IMG_VERSION" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}      
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ env.MY_IMAGE }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true    
