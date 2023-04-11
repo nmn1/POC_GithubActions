@@ -68,7 +68,7 @@ jobs:
       - name: echo ***********    
         run: | 
           TAG=${{ steps.meta.outputs.version }}
-          echo "MY_TAG<<$TAG" >> $GITHUB_ENV
+          echo "MY_TAG=$TAG" >> $GITHUB_ENV
           echo "${{ env.MY_TAG }}"
       
   
