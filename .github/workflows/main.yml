@@ -69,8 +69,8 @@ jobs:
         run: | 
           echo "${{ steps.meta.outputs.version }} *********************"
           echo "${{ github.run_id }}"
-          echo "my-tag=${{ steps.meta.outputs.version }}" >> $GITHUB_ENV
-          echo ${{ env.my-tag }}
+          echo "MY_TAG=`${{ steps.meta.outputs.version }}`" >> $GITHUB_ENV
+          echo ${{ env.MY_TAG }}
       
   
   DEPLOYMENT-DEVELOPMENT-ECS:
