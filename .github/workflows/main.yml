@@ -87,12 +87,11 @@ jobs:
         
       - name: echo image name
         env:
-          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}}
-          MY_IMAGE: echo ${{ env.DOCKER_REPO }}:$MY_IMG_VERSION 
-        run: |
-          echo $MY_IMG_VERSION
-          echo $MY_MY_IMAGE
-        
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}} 
+      -  name: Set env
+         run: |
+           echo ::set-env name=MY_IMAGE::${{ env.DOCKER_REPO }}:$MY_IMG_VERSION
+           echo $MY_IMAGE
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
