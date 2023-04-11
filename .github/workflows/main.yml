@@ -76,7 +76,7 @@ jobs:
           name: docker
           path: /tmp/docker.tar
   
-  DEPLOYMENT-On-ECS:
+  DEPLOYMENT-DEVELOPMENT-ECS:
     runs-on: ubuntu-latest
     environment: development
     needs: DOCKER_BUILD
