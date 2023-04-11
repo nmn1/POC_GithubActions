@@ -71,7 +71,7 @@ jobs:
       - name: Output Image Tag
         id: tagging
         run: | 
-          tag_info=$(echo "${{ steps.meta.outputs.tags }}") 
+          tag_info=$(echo ${{ steps.meta.outputs.tags }}) 
           echo "taggs=$(echo ${tag_info}) >> $GITHUB_OUTPUT
 
           
