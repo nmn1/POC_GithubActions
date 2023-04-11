@@ -72,7 +72,7 @@ jobs:
         id: tagging
         run: | 
           tag_info=$(echo "${{ steps.meta.outputs.tags }}") 
-          echo "taggs=$(echo $tag_info)" >> "$GITHUB_OUTPUT"
+          echo "taggs=$(echo $tag_info) >> $GITHUB_OUTPUT
           echo $taggs
           
       
