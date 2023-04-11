@@ -105,7 +105,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ env.DOCKER_REPO }}/$MY_IMG_VERSION
+          image: ${{ env.DOCKER_REPO }}:$MY_IMG_VERSION
       - name: echo image version
         run: echo $MY_IMG_VERSION
 
