@@ -72,8 +72,8 @@ jobs:
         id: tagging
         run: | 
           tag_info=$(echo "${{ steps.meta.outputs.tags }}") 
-          echo "taggs=$(echo $tag_info) >> $GITHUB_OUTPUT
-          echo $taggs
+          echo "taggs=$(echo ${tag_info}) >> $GITHUB_OUTPUT
+
           
       
   DEPLOYMENT-DEVELOPMENT-ECS:
