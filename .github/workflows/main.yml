@@ -101,6 +101,7 @@ jobs:
         id: task-def
         env:
           MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}}
+          MY_IMAGE: echo ${{ env.DOCKER_REPO }}:$MY_IMG_VERSION 
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
