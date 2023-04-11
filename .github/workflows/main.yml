@@ -87,7 +87,7 @@ jobs:
       - name: echo image name
         env:
           MY_IMAGE_TAG: ${{needs.DOCKER_BUILD.outputs.MY_TAG}}
-        run: echo "${{ env.MY_IMAGE_TAG }}"
+        run: echo $MY_IMAGE_TAG 
         
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
