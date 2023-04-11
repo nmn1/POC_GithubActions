@@ -76,8 +76,8 @@ jobs:
           push: ${{ github.ref_type == 'tag' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          run: echo "${{ steps.meta.outputs.tags }}........"
-
+      - name: echo ***********    
+        run: echo "${{ steps.meta.outputs.tags }} *********************"
       - name: " Docker Artifacts"
         uses: actions/upload-artifact@v3
         with:
