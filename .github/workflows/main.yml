@@ -74,7 +74,7 @@ jobs:
   
   DEPLOYMENT-DEVELOPMENT-ECS:
     runs-on: ubuntu-latest
-    if: github.ref_type == 'dev'
+    if: github.ref_name == 'dev'
     environment: development
     needs: DOCKER_BUILD
     steps:
