@@ -11,6 +11,7 @@ env:
   ECS_CLUSTER: MY_ECS_DEV_CLUSTER                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: .aws/task-definition.json
   CONTAINER_NAME: gameApp  
+  DOCKER_REPO: naman01/poc_git_actions
 
 jobs:
   liniting:
@@ -99,14 +100,14 @@ jobs:
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         env:
-          MY_IMAGE_TAG: ${{needs.DOCKER_BUILD.outputs.MY_TAG}}
+          MY_IMG_VERSION: ${{needs.DOCKER_BUILD.outputs.MY_VERSION}
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ env.MY_IMAGE_TAG }}
-      - name: echo image name
-        run: echo "${{ env.MY_IMAGE_TAG }}"
+          image: ${{ env.DOCKER_REPO }}/$MY_IMG_VERSION
+      - name: echo image version
+        run: echo $MY_IMG_VERSION
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
