@@ -32,7 +32,12 @@ jobs:
       run: echo "steps for sast"
 
   DOCKER_BUILD:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{matrix.os}}
+
     needs: [SAST, liniting ]
     outputs:
       MY_VERSION: ${{ steps.version.outputs.img_version }}
