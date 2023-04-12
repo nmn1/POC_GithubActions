@@ -46,7 +46,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      - name: Docker meta
+      - name: Docker Meta Tags
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -68,6 +68,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.tags }}
+          cache-to: type=inline
       
       - name: Output Image version
         id: version
