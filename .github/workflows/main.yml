@@ -60,7 +60,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build For Production
+      - name: Building Image
         id: image-push
         uses: docker/build-push-action@v4  
         with:
@@ -68,6 +68,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ steps.meta.outputs.tags }}
+          cache-to: type=inline
       
       - name: Output Image version
         id: version
